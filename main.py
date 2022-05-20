@@ -22,18 +22,22 @@ HTML_BANNER = """
     <p style="color:white;text-align:center;">[Escuelas Primarias CABA]</p>
     </div>
     """
+HTML_SEPARADOR = """
+    <div style="background-color:#464e5f;padding:5px;border-radius:20px">
+    </div>
+    """
 
 
 def main():
     
     stc.html(HTML_BANNER)
     
-    menu = ["Crear", "Consultar", "Actualizar", "Borrar", "About"]
-    choice = st.sidebar.selectbox("Menu", menu)
+    menu = ["Inspecciones", "Unidades Educacion Especial", "Personal Educacion Especial", "Analitica","About"]
+    choice = st.sidebar.selectbox("MENU EDUCACION ESPECIAL", menu)
     #create_table()
 
-    if choice == "Crear":
-        st.subheader("CREAR INSPECCION")
+    if choice == "Inspecciones":
+        st.subheader("Cargar INSPECCION")
         col1, col2, col3 = st.columns(3)
 
         with col1:
@@ -44,7 +48,7 @@ def main():
                     stc.html('''<a href='https://www.freepik.es/vectores/lapiz-animado'>Vector de lapiz animado creado por catalyststuff - www.freepik.es</a>''')
 
         with col2:
-            lista_unidades = [i[0] for i in view_all_unidades()]
+            lista_unidades = [i[0] for i in pl_unidad()]
             unidadraw = st.selectbox("Unidad", lista_unidades).split('-')
             unidad = int(unidadraw[0])
             dia = st.date_input("Fecha Inspeccion") 
@@ -53,13 +57,13 @@ def main():
             
         with col3:
             obs = st.text_area("Observacion")
-            lista_prioridades = [i[0] for i in view_all_prioridades()]
+            lista_prioridades = [i[0] for i in pl_prioridad()]
             prioridadraw = st.selectbox("Prioridad", lista_prioridades).split('-')
             prioridad = int(prioridadraw[0])
             apoyo = st.checkbox('Apoyo Profesional')
             if apoyo:
                 apoyo = 1
-                lista_apoyo=[i[0] for i in view_all_apoyo()]
+                lista_apoyo=[i[0] for i in pl_apoyo()]
                 apoyo_det = st.multiselect("Profesionales Apoyo", lista_apoyo)
             else:
                 apoyo = 0
@@ -81,18 +85,27 @@ def main():
                 #st.info("El dato devuelto es: {}".format(type(inspraw)))
                 st.success("Se agregò Inspeccion Nro {}".format(insp))
 
+        #stc.html(HTML_SEPARADOR)
+
+        st.subheader("Consultar INSPECCION")
+        with st.expander("Vista Inspecciones Cabecera"):
+            result = view_all_insp_cab()
+            #st.write(result)
+            clean_df = pd.DataFrame(result, columns=["InspeccionId","UnidadId","Nombre_Unidad","InspeccionDate","Observacion","Prioridad","Apoyo"])
+            st.dataframe(clean_df)
+
             
     elif choice == "Consultar":
         st.subheader("CONSULTAR INSPECCION")
         with st.expander("Vista Inspecciones Detalladas"):
             result = view_all_insp()
-            st.write(result)
+            #st.write(result)
             clean_df = pd.DataFrame(result) #, columns=["InspeccionId", "UnidadId", "Fecha", "Observacion"])
             st.dataframe(clean_df)
 
         with st.expander("Vista Inspecciones Cabecera"):
             result = view_all_insp_cab()
-            st.write(result)
+            #st.write(result)
             clean_df = pd.DataFrame(result, columns=["InspeccionId","UnidadId","Nombre_Unidad","InspeccionDate","Observacion","Prioridad","Apoyo"])
             st.dataframe(clean_df)
 
@@ -111,7 +124,128 @@ def main():
         
     elif choice == "Borrar":
         st.subheader("BORRAR INSPECCION")
-        
+
+    elif choice == "Unidades Educacion Especial":
+        st.subheader("Crear UEE")
+        with st.form("c_uee", clear_on_submit=True):
+            st.write("Ingrese Datos >>>")
+            lista_escuelas = [i[0] for i in pl_escuela()]
+            escuelaraw = st.selectbox("Escuela", lista_escuelas).split('-')
+            escuela = int(escuelaraw[0])
+
+            lista_conduccion = [i[0] for i in pl_conduccion()]
+            conduccionraw = st.selectbox("Conduccion UEE", lista_conduccion).split('-')
+            conduccion = int(conduccionraw[0])
+
+            periodo = st.text_input("Periodo", max_chars=10, placeholder="Ej. Año 2022")
+            descripcion = st.text_input("Descripcion", max_chars=40, placeholder="Escriba un nombre identificador de la UEE")
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                lista_turnos = [i[0] for i in pl_turno()]
+                #turnoraw = st.selectbox("Turno", lista_turnos).split('-')
+                turnoraw = st.radio("Turno", lista_turnos).split('-')
+                turno = int(turnoraw[0])
+
+            with col2:
+                lista_ciclos = [i[0] for i in pl_ciclo()]
+                #cicloraw = st.selectbox("Ciclo", lista_ciclos).split('-')
+                cicloraw = st.radio("Ciclo", lista_ciclos).split('-')
+                ciclo = int(cicloraw[0])
+
+            lista_doc_esp=[i[0] for i in pl_doc_esp()]
+            doc_esp_det = st.multiselect("Docentes Educacion Especial", lista_doc_esp)
+                                    
+            # Every form must have a submit button.
+            submitted = st.form_submit_button("Confirmar")
+            if submitted:
+                ueeraw= add_uee_cab(escuela,turno,ciclo,conduccion,periodo,descripcion)
+                #print(inspraw)
+                unidad=int(ueeraw[0])
+                for i in range(len(doc_esp_det)):
+                    #print(doc_esp_det[i])
+                    doc_espraw=doc_esp_det[i].split('-')
+                    doc_esp=int(doc_espraw[0])
+                    #print(doc_esp)
+                    add_uee_det(unidad,doc_esp)
+                
+                #st.info("El dato devuelto es: {}".format(type(inspraw)))
+                st.success("Se agregò UEE Nro {}".format(unidad))
+
+
+            #st.write("Outside the form")
+            st.subheader("Consultar UEE")
+            with st.expander("Ver Unidades Educacion Especial"):
+                result = view_all_uee()
+                #st.write(result)
+                clean_df = pd.DataFrame(result) #, columns=["InspeccionId", "UnidadId", "Fecha", "Observacion"])
+                st.dataframe(clean_df)
+
+    elif choice == "Personal Educacion Especial":
+        st.subheader("Cargar Personal EE (Docentes, Apoyos y Directivos)")
+        with st.form("c_pee", clear_on_submit=True):
+            st.write("Ingrese Datos >>>")
+            apellido = st.text_input("Apellido", max_chars=20, placeholder="Ingrese Apellido")
+            nombre = st.text_input("Nombre", max_chars=20, placeholder="Ingrese Nombre")
+            
+            lista_cat = [i[0] for i in pl_cat()]
+            catraw = st.selectbox("Categoria", lista_cat).split('-')
+            cat = int(catraw[0])
+
+            lista_funcion = [i[0] for i in pl_funcion()]
+            funcionraw = st.selectbox("Funcion", lista_funcion).split('-')
+            funcion = int(funcionraw[0])
+
+            telefono = st.text_input("Telefono", max_chars=24, placeholder="Ingrese Telefono")
+            email = st.text_input("Email", max_chars=60, placeholder="Ingrese Email")
+            
+            docesp = st.checkbox('Docente Especial')
+            if docesp:
+                docesp = 1
+            else:
+                docesp = 0
+
+            conduccion = st.checkbox('Conduccion')
+            if conduccion:
+                conduccion = 1
+            else:
+                conduccion = 0
+
+            apoyo = st.checkbox('Apoyo')
+            if apoyo:
+                apoyo = 1
+            else:
+                apoyo = 0
+
+            # Every form must have a submit button.
+            submitted = st.form_submit_button("Confirmar")
+            if submitted:
+                add_pee(apellido, nombre, cat, funcion, telefono, email, docesp, conduccion, apoyo)
+                
+                #st.info("El dato devuelto es: {}".format(type(inspraw)))
+                st.success("Se agregò a {}, {}".format(apellido,nombre))
+
+            #st.write("Outside the form")
+            st.subheader("Consultar Personal EE")
+            with st.expander("Ver Docentes Educacion Especial"):
+                result = view_all_docesp()
+                #st.write(result)
+                clean_df = pd.DataFrame(result, columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
+                st.dataframe(clean_df)
+
+            with st.expander("Ver Conduccion Educacion Especial"):
+                result = view_all_conduccion()
+                #st.write(result)
+                clean_df = pd.DataFrame(result,columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
+                st.dataframe(clean_df)
+
+            with st.expander("Ver Apoyo Educacion Especial"):
+                result = view_all_apoyo()
+                #st.write(result)
+                clean_df = pd.DataFrame(result,columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
+                st.dataframe(clean_df)
+
     else:
         st.subheader("ACERCA DE *Educacion_Especial_App*")
         st.info("Built with Streamlit - Año 2022")
