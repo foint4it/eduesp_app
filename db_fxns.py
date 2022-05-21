@@ -30,6 +30,10 @@ def add_pee(apellido, nombre, cat, funcion, telefono, email, docesp, conduccion,
     c.execute('INSERT INTO personal(Apellido,Nombre,CatId,FuncionId,Telefono,Email,DocEspecial,Conduccion,Apoyo) VALUES (?,?,?,?,?,?,?,?,?)',(apellido, nombre, cat, funcion, telefono, email, docesp, conduccion, apoyo))
     conn.commit()
 
+def add_eee(nombre, dist, conduccion, domicilio, ciudad, cpostal, tel, email, geo, escesp):
+    c.execute('INSERT INTO escuela(Nombre,DistritoId,AutoridadId,Domicilio,Ciudad,CodigoPostal,Telefono,Email,LocationGeo,EduEspecial) VALUES (?,?,?,?,?,?,?,?,?,?)',(nombre, dist, conduccion, domicilio, ciudad, cpostal, tel, email, geo, escesp))
+    conn.commit()
+
 
 # vistas para consultas
 
@@ -120,6 +124,12 @@ def pl_ciclo():
 	c.execute('SELECT DISTINCT CicloId || "-" || Nombre as Ciclo FROM ciclo')
 	data = c.fetchall()
 	return data
+
+def pl_distrito():
+	c.execute('SELECT DISTINCT DistritoId || "-" || Nombre as Distrito FROM distrito')
+	data = c.fetchall()
+	return data
+
 
 
 

@@ -36,7 +36,7 @@ def main():
     
     stc.html(HTML_BANNER)
     
-    menu = ["Inspecciones", "Unidades Educacion Especial", "Personal Educacion Especial", "Analitica","Exportacion a CSV", "About"]
+    menu = ["Inspecciones", "Unidades Educacion Especial", "Escuelas", "Personal Educacion Especial", "Analitica","Exportacion a CSV", "About"]
     choice = st.sidebar.selectbox("MENU EDUCACION ESPECIAL", menu)
     #create_table()
 
@@ -98,7 +98,54 @@ def main():
             clean_df = pd.DataFrame(result, columns=["InspeccionId","UnidadId","Nombre_Unidad","InspeccionDate","Observacion","Prioridad","Apoyo"])
             st.dataframe(clean_df)
 
+    elif choice == "Escuelas":
+        st.subheader("Cargar Escuelas Educacion Especial")
+        with st.form("c_eee", clear_on_submit=True):
+            st.write("Ingrese Datos >>>")
+            nombre = st.text_input("Nombre", max_chars=200, placeholder="Ingrese Escuela")
             
+            lista_dist = [i[0] for i in pl_distrito()]
+            distraw = st.selectbox("Distrito", lista_dist).split('-')
+            dist = int(distraw[0])
+
+            lista_cond = [i[0] for i in pl_conduccion()]
+            condraw = st.selectbox("Conduccion", lista_cond).split('-')
+            conduccion = int(condraw[0])
+
+            domicilio = st.text_input("Domicilio", max_chars=70, placeholder="Ingrese Domicilio")
+            ciudad = st.text_input("Ciudad", max_chars=40, placeholder="Ingrese Ciudad")
+            cpostal = st.text_input("Codigo Postal", max_chars=10, placeholder="Ingrese Codigo Postal")
+
+            tel = st.text_input("Telefono", max_chars=24, placeholder="Ingrese Telefono")
+            email = st.text_input("Email", max_chars=40, placeholder="Ingrese Email")
+            
+            geo = st.text_input("Geo Coordenadas", max_chars=24, placeholder="Ingrese Geo Coordenadas")
+
+            escesp = st.checkbox('Educacion Especial')
+            if escesp:
+                escesp = 1
+            else:
+                escesp = 0
+
+            
+            # Every form must have a submit button.
+            submitted = st.form_submit_button("Confirmar")
+            if submitted:
+                add_eee(nombre, dist, conduccion, domicilio, ciudad, cpostal, tel, email, geo, escesp)
+                
+                #st.info("El dato devuelto es: {}".format(type(inspraw)))
+                st.success("Se agregò el establecimiento: {}".format(nombre))
+
+        #st.write("Fuera del Form")
+        st.subheader("Consultar Escuelas EE")
+        
+        with st.expander("Ver Escuelas Educacion Especial"):
+            result = view_all_escuelas()
+            #st.write(result)
+            clean_df = pd.DataFrame(result) 
+            st.dataframe(clean_df)
+
+        pass
     elif choice == "Exportacion a CSV":
         st.subheader("Exportar Tablas Maestras a CSV")
         with st.expander("Vista Inspecciones Detalladas"):
