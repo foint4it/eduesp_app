@@ -48,6 +48,11 @@ def view_all_uee():
 	data = c.fetchall()
 	return data
 
+def view_all_escuelas():
+	c.execute('SELECT * FROM vw_escuela')
+	data = c.fetchall()
+	return data
+
 def view_all_docesp():
 	c.execute('SELECT * FROM vw_docente_especial')
 	data = c.fetchall()

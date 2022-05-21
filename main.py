@@ -27,12 +27,16 @@ HTML_SEPARADOR = """
     </div>
     """
 
+@st.cache
+def convert_df(df):
+    return df.to_csv().encode('utf-8')
+
 
 def main():
     
     stc.html(HTML_BANNER)
     
-    menu = ["Inspecciones", "Unidades Educacion Especial", "Personal Educacion Especial", "Analitica","About"]
+    menu = ["Inspecciones", "Unidades Educacion Especial", "Personal Educacion Especial", "Analitica","Exportacion a CSV", "About"]
     choice = st.sidebar.selectbox("MENU EDUCACION ESPECIAL", menu)
     #create_table()
 
@@ -95,8 +99,8 @@ def main():
             st.dataframe(clean_df)
 
             
-    elif choice == "Consultar":
-        st.subheader("CONSULTAR INSPECCION")
+    elif choice == "Exportacion a CSV":
+        st.subheader("Exportar Tablas Maestras a CSV")
         with st.expander("Vista Inspecciones Detalladas"):
             result = view_all_insp()
             #st.write(result)
@@ -109,14 +113,53 @@ def main():
             clean_df = pd.DataFrame(result, columns=["InspeccionId","UnidadId","Nombre_Unidad","InspeccionDate","Observacion","Prioridad","Apoyo"])
             st.dataframe(clean_df)
 
-        with st.expander("Grafica Inspecciones a Unidades"):
-            uinsp_df = clean_df['Nombre_Unidad'].value_counts().to_frame()
+        with st.expander("Ver Unidades Educacion Especial"):
+            result = view_all_uee()
+            #st.write(result)
+            clean_df = pd.DataFrame(result) #, columns=["InspeccionId", "UnidadId", "Fecha", "Observacion"])
+            st.dataframe(clean_df)
+
+        with st.expander("Ver Escuelas Educacion Especial"):
+            result = view_all_escuelas()
+            #st.write(result)
+            clean_df = pd.DataFrame(result) #, columns=["InspeccionId", "UnidadId", "Fecha", "Observacion"])
+            st.dataframe(clean_df)        
+        
+        with st.expander("Ver Docentes Educacion Especial"):
+            result1 = view_all_docesp()
+            #st.write(result)
+            clean_df1 = pd.DataFrame(result1, columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
+            st.dataframe(clean_df1)
+
+            #csv = convert_df(clean_df1)
+
+            #st.download_button(
+             #   label="Download data as CSV",
+             #   data=csv,
+             #   file_name='docentes_esp.csv',
+             #   mime='text/csv',
+            #)
+
+        with st.expander("Ver Conduccion Educacion Especial"):
+            result2 = view_all_conduccion()
+            #st.write(result)
+            clean_df = pd.DataFrame(result2,columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
+            st.dataframe(clean_df)
+
+        with st.expander("Ver Apoyo Educacion Especial"):
+            result3 = view_all_apoyo()
+            #st.write(result)
+            clean_df = pd.DataFrame(result3,columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
+            st.dataframe(clean_df)
+
+        #with st.expander("Grafica Inspecciones a Unidades"):
+         #   uinsp_df = clean_df['Nombre_Unidad'].value_counts().to_frame()
             # st.dataframe(uinsp_df)
-            uinsp_df = uinsp_df.reset_index()
+          #  uinsp_df = uinsp_df.reset_index()
             #st.dataframe(uinsp_df)
 
-            p1 = px.pie(uinsp_df, names='index', values='Nombre_Unidad')
-            st.plotly_chart(p1, use_container_width=True)
+           # p1 = px.pie(uinsp_df, names='index', values='Nombre_Unidad')
+           # st.plotly_chart(p1, use_container_width=True)
 
 
     elif choice == "Actualizar":
@@ -174,13 +217,13 @@ def main():
                 st.success("Se agregò UEE Nro {}".format(unidad))
 
 
-            #st.write("Outside the form")
-            st.subheader("Consultar UEE")
-            with st.expander("Ver Unidades Educacion Especial"):
-                result = view_all_uee()
-                #st.write(result)
-                clean_df = pd.DataFrame(result) #, columns=["InspeccionId", "UnidadId", "Fecha", "Observacion"])
-                st.dataframe(clean_df)
+        st.write("Outside the form")
+        st.subheader("Consultar UEE")
+        with st.expander("Ver Unidades Educacion Especial"):
+            result = view_all_uee()
+            #st.write(result)
+            clean_df = pd.DataFrame(result) #, columns=["InspeccionId", "UnidadId", "Fecha", "Observacion"])
+            st.dataframe(clean_df)
 
     elif choice == "Personal Educacion Especial":
         st.subheader("Cargar Personal EE (Docentes, Apoyos y Directivos)")
@@ -226,25 +269,35 @@ def main():
                 #st.info("El dato devuelto es: {}".format(type(inspraw)))
                 st.success("Se agregò a {}, {}".format(apellido,nombre))
 
-            #st.write("Outside the form")
-            st.subheader("Consultar Personal EE")
-            with st.expander("Ver Docentes Educacion Especial"):
-                result = view_all_docesp()
-                #st.write(result)
-                clean_df = pd.DataFrame(result, columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
-                st.dataframe(clean_df)
+        #st.write("Fuera del Form")
+        st.subheader("Consultar Personal EE")
+        
+        with st.expander("Ver Docentes Educacion Especial"):
+            result = view_all_docesp()
+            #st.write(result)
+            clean_df = pd.DataFrame(result, columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
+            st.dataframe(clean_df)
 
-            with st.expander("Ver Conduccion Educacion Especial"):
-                result = view_all_conduccion()
-                #st.write(result)
-                clean_df = pd.DataFrame(result,columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
-                st.dataframe(clean_df)
+            #csv = convert_df(clean_df)
 
-            with st.expander("Ver Apoyo Educacion Especial"):
-                result = view_all_apoyo()
-                #st.write(result)
-                clean_df = pd.DataFrame(result,columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
-                st.dataframe(clean_df)
+            #st.download_button(
+            #    label="Download data as CSV",
+            #    data=csv,
+            #    file_name='docentes_esp.csv',
+            #    mime='text/csv',
+            #)
+
+        with st.expander("Ver Conduccion Educacion Especial"):
+            result = view_all_conduccion()
+            #st.write(result)
+            clean_df = pd.DataFrame(result,columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
+            st.dataframe(clean_df)
+
+        with st.expander("Ver Apoyo Educacion Especial"):
+            result = view_all_apoyo()
+            #st.write(result)
+            clean_df = pd.DataFrame(result,columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
+            st.dataframe(clean_df)
 
     else:
         st.subheader("ACERCA DE *Educacion_Especial_App*")
