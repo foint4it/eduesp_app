@@ -3,7 +3,7 @@ import streamlit as st
 st.set_page_config(page_title='Educacion Especial', page_icon='📔')
 
 from PIL import Image
-from datetime import datetime
+from datetime import datetime as dt
 import pandas as pd
 from db_fxns import * 
 import streamlit.components.v1 as stc
@@ -36,7 +36,7 @@ def main():
     
     stc.html(HTML_BANNER)
     
-    menu = ["Inspecciones", "Unidades Educacion Especial", "Escuelas", "Personal Educacion Especial", "Analitica","Exportacion a CSV", "About"]
+    menu = ["Inspecciones", "Unidades Educacion Especial", "Escuelas", "Personal Educacion Especial", "Analitica","Exportacion Inspecciones a CSV", "About"]
     choice = st.sidebar.selectbox("MENU EDUCACION ESPECIAL", menu)
     #create_table()
 
@@ -126,7 +126,6 @@ def main():
                 escesp = 1
             else:
                 escesp = 0
-
             
             # Every form must have a submit button.
             submitted = st.form_submit_button("Confirmar")
@@ -144,76 +143,6 @@ def main():
             #st.write(result)
             clean_df = pd.DataFrame(result) 
             st.dataframe(clean_df)
-
-        pass
-    elif choice == "Exportacion a CSV":
-        st.subheader("Exportar Tablas Maestras a CSV")
-        with st.expander("Vista Inspecciones Detalladas"):
-            result = view_all_insp()
-            #st.write(result)
-            clean_df = pd.DataFrame(result) #, columns=["InspeccionId", "UnidadId", "Fecha", "Observacion"])
-            st.dataframe(clean_df)
-
-        with st.expander("Vista Inspecciones Cabecera"):
-            result = view_all_insp_cab()
-            #st.write(result)
-            clean_df = pd.DataFrame(result, columns=["InspeccionId","UnidadId","Nombre_Unidad","InspeccionDate","Observacion","Prioridad","Apoyo"])
-            st.dataframe(clean_df)
-
-        with st.expander("Ver Unidades Educacion Especial"):
-            result = view_all_uee()
-            #st.write(result)
-            clean_df = pd.DataFrame(result) #, columns=["InspeccionId", "UnidadId", "Fecha", "Observacion"])
-            st.dataframe(clean_df)
-
-        with st.expander("Ver Escuelas Educacion Especial"):
-            result = view_all_escuelas()
-            #st.write(result)
-            clean_df = pd.DataFrame(result) #, columns=["InspeccionId", "UnidadId", "Fecha", "Observacion"])
-            st.dataframe(clean_df)        
-        
-        with st.expander("Ver Docentes Educacion Especial"):
-            result1 = view_all_docesp()
-            #st.write(result)
-            clean_df1 = pd.DataFrame(result1, columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
-            st.dataframe(clean_df1)
-
-            #csv = convert_df(clean_df1)
-
-            #st.download_button(
-             #   label="Download data as CSV",
-             #   data=csv,
-             #   file_name='docentes_esp.csv',
-             #   mime='text/csv',
-            #)
-
-        with st.expander("Ver Conduccion Educacion Especial"):
-            result2 = view_all_conduccion()
-            #st.write(result)
-            clean_df = pd.DataFrame(result2,columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
-            st.dataframe(clean_df)
-
-        with st.expander("Ver Apoyo Educacion Especial"):
-            result3 = view_all_apoyo()
-            #st.write(result)
-            clean_df = pd.DataFrame(result3,columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
-            st.dataframe(clean_df)
-
-        #with st.expander("Grafica Inspecciones a Unidades"):
-         #   uinsp_df = clean_df['Nombre_Unidad'].value_counts().to_frame()
-            # st.dataframe(uinsp_df)
-          #  uinsp_df = uinsp_df.reset_index()
-            #st.dataframe(uinsp_df)
-
-           # p1 = px.pie(uinsp_df, names='index', values='Nombre_Unidad')
-           # st.plotly_chart(p1, use_container_width=True)
-
-
-    elif choice == "Actualizar":
-        st.subheader("ACTUALIZAR INSPECCION")
-        
-    elif choice == "Borrar":
-        st.subheader("BORRAR INSPECCION")
 
     elif choice == "Unidades Educacion Especial":
         st.subheader("Crear UEE")
@@ -325,15 +254,6 @@ def main():
             clean_df = pd.DataFrame(result, columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
             st.dataframe(clean_df)
 
-            #csv = convert_df(clean_df)
-
-            #st.download_button(
-            #    label="Download data as CSV",
-            #    data=csv,
-            #    file_name='docentes_esp.csv',
-            #    mime='text/csv',
-            #)
-
         with st.expander("Ver Conduccion Educacion Especial"):
             result = view_all_conduccion()
             #st.write(result)
@@ -346,6 +266,111 @@ def main():
             clean_df = pd.DataFrame(result,columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
             st.dataframe(clean_df)
 
+    elif choice == "Exportacion Inspecciones a CSV":
+        st.subheader("Exportar Vista_Inspecciones_Total a CSV")
+        with st.expander("Vista Inspecciones Total"):
+            inspeccion_total = view_inspeccion_total()
+            #st.write(result)
+            clean_df_insp_tot = pd.DataFrame(inspeccion_total,
+            columns=["InspId", "UnidadId", "Unidad","Fecha", "Obs","Prioridad","ConApoyo",
+            "EscId","Escuela","Distrito","TurnoId","Turno","CicloId","Ciclo","DetId",
+            "ApoyoId","NombreApoyo","CatId","Categoria","FuncionId","Funcion"])
+            st.dataframe(clean_df_insp_tot)
+
+            csv = convert_df(clean_df_insp_tot)
+            st.download_button(
+                label="Download data as CSV",
+                data=csv,
+                file_name='inspecciones_totales.csv',
+                mime='text/csv',
+            )
+
+        
+        #with st.expander("Grafica Inspecciones a Unidades"):
+         #   uinsp_df = clean_df['Nombre_Unidad'].value_counts().to_frame()
+            # st.dataframe(uinsp_df)
+          #  uinsp_df = uinsp_df.reset_index()
+            #st.dataframe(uinsp_df)
+
+           # p1 = px.pie(uinsp_df, names='index', values='Nombre_Unidad')
+           # st.plotly_chart(p1, use_container_width=True)
+
+    elif choice == "AnaliticaB":
+        st.subheader("Ingrese Rango Fechas DataFrame")
+        col1, col2 = st.columns(2)
+
+        with col1:
+                insp_total = view_inspeccion_total()
+                #st.write(result)
+                df = pd.DataFrame(insp_total,
+                columns=["InspId", "UnidadId", "Unidad","Fecha", "Obs","Prioridad","ConApoyo",
+                "EscId","Escuela","Distrito","TurnoId","Turno","CicloId","Ciclo","DetId",
+                "ApoyoId","NombreApoyo","CatId","Categoria","FuncionId","Funcion"])
+                #df.dtypes
+                st.dataframe(df)
+                
+                lista_esc=[i[0] for i in pl_escuela()]
+                escuelas = st.multiselect("Escuelas", lista_esc)
+
+                insp_in_esc = df[df.EscId.isin([1,3,5])]
+                #planets_in_years.head()
+                st.dataframe(insp_in_esc)
+
+                d = st.date_input("Desde")
+                desde = d.strftime("%Y-%m-%d")
+                st.write('Fecha Inicial:', d)
+                st.write(desde)
+                h = st.date_input("Hasta")
+                hasta = h.strftime("%Y-%m-%d")
+                print("h",h)
+                print("hasta", hasta)
+                print(type(h))
+                print(type(hasta))
+                st.write('Fecha Final:', h)
+                st.write(hasta)
+                print(df['Fecha'].dtype)
+                
+                filtro_df=df.query("Fecha >= '2022-05-20' and Fecha <= '2022-05-21'")
+                #filtro_df = df[df["Fecha"].isin(pd.date_range('d','h'))]
+                #filtro_df =df.loc[df["Fecha"].between('desde', 'hasta')]
+                #print(filtered_df)
+                
+                st.dataframe(filtro_df)
+                #st.dataframe(df)
+
+                
+        with col2:
+            pass
+    
+    elif choice == "Analitica":
+        st.subheader("Tablas Cruzadas y Graficas")
+        #col1, col2 = st.columns([3,1])
+
+        with st.expander("Tabla Cruzada Inspeccion"):
+            st.text("<<Cantidad de Inspecciones por Distrito/Unidad y Turno/Ciclo>>")
+            insp_total = view_inspeccion_total()
+            #st.write(result)
+            df = pd.DataFrame(insp_total,
+            columns=["InspId", "UnidadId", "Unidad","Fecha", "Obs","Prioridad","ConApoyo",
+            "EscId","Escuela","Distrito","TurnoId","Turno","CicloId","Ciclo","DetId",
+            "ApoyoId","NombreApoyo","CatId","Categoria","FuncionId","Funcion"])
+            #st.dataframe(df)
+            
+            dfcross= df.pivot_table('Fecha',['Distrito','Unidad'],['Turno','Ciclo'], aggfunc='count', margins=True)
+            st.dataframe(dfcross)
+        
+
+        with st.expander("Grafica Inspecciones a Unidades"):
+            st.text("<<Cantidad de Inspecciones por Unidad>>")
+            uinsp_df = df['Unidad'].value_counts().to_frame()
+            #st.dataframe(uinsp_df)
+            uinsp_df = uinsp_df.reset_index()
+            st.dataframe(uinsp_df)
+
+            p1 = px.pie(uinsp_df, names='index', values='Unidad')
+            st.plotly_chart(p1, use_container_width=True)
+
+                
     else:
         st.subheader("ACERCA DE *Educacion_Especial_App*")
         st.info("Built with Streamlit - Año 2022")

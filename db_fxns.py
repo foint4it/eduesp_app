@@ -1,5 +1,5 @@
 import sqlite3
-conn = sqlite3.connect('escuelas.db') #,check_same_thread=False)
+conn = sqlite3.connect('escuelas.db',check_same_thread=False)
 c = conn.cursor()
 
 # querys insercion registros
@@ -69,6 +69,12 @@ def view_all_conduccion():
 
 def view_all_apoyo():
 	c.execute('SELECT * FROM vw_apoyo_especial')
+	data = c.fetchall()
+	return data
+
+# vista "inspeccion_total" para tablas cruzadas, graficos y csv
+def view_inspeccion_total():
+	c.execute('SELECT * FROM vw_inspeccion_all')
 	data = c.fetchall()
 	return data
 
