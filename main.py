@@ -5,6 +5,7 @@ st.set_page_config(page_title='Educacion Especial', page_icon='📔')
 from PIL import Image
 from datetime import datetime as dt
 import pandas as pd
+from st_aggrid import AgGrid
 from db_fxns import * 
 import streamlit.components.v1 as stc
 
@@ -97,7 +98,9 @@ def main():
             result = view_all_insp_cab()
             #st.write(result)
             clean_df = pd.DataFrame(result, columns=["InspeccionId","UnidadId","Nombre_Unidad","InspeccionDate","Observacion","Prioridad","Apoyo"])
-            st.dataframe(clean_df)
+            #st.dataframe(clean_df)
+
+            AgGrid(clean_df)
 
     elif choice == "Escuelas":
         st.subheader("Cargar Escuelas Educacion Especial")
