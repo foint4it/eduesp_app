@@ -73,11 +73,15 @@ def view_all_apoyo():
 	return data
 
 # vista "inspeccion_total" para tablas cruzadas, graficos y csv
-def view_inspeccion_total():
+def view_inspeccion_tot():
 	c.execute('SELECT * FROM vw_inspeccion_all')
 	data = c.fetchall()
 	return data
 
+def view_inspeccion_nodet():
+	c.execute('SELECT * FROM vw_inspeccion_nodet')
+	data = c.fetchall()
+	return data
 
 # vistas pick list
 

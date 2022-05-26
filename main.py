@@ -26,6 +26,7 @@ HTML_SEPARADOR = """
     <div style="background-color:#464e5f;padding:5px;border-radius:20px">
     </div>
     """
+HTML_SEP = """<hr width=100%  align="center"  size=10 color="blue">"""
 
 @st.cache
 def convert_df(df):
@@ -269,10 +270,10 @@ def main():
     elif choice == "Exportacion Inspecciones a CSV":
         st.subheader("Exportar Vista_Inspecciones_Total a CSV")
         with st.expander("Vista Inspecciones Total"):
-            inspeccion_total = view_inspeccion_total()
+            inspeccion_total = view_inspeccion_tot()
             #st.write(result)
             clean_df_insp_tot = pd.DataFrame(inspeccion_total,
-            columns=["InspId", "UnidadId", "Unidad","Fecha", "Obs","Prioridad","ConApoyo",
+            columns=["InspId", "UnidadId", "Unidad","FHora", "Fecha", "Obs","Prioridad","ConApoyo",
             "EscId","Escuela","Distrito","TurnoId","Turno","CicloId","Ciclo","DetId",
             "ApoyoId","NombreApoyo","CatId","Categoria","FuncionId","Funcion"])
             st.dataframe(clean_df_insp_tot)
@@ -286,90 +287,65 @@ def main():
             )
 
         
-        #with st.expander("Grafica Inspecciones a Unidades"):
-         #   uinsp_df = clean_df['Nombre_Unidad'].value_counts().to_frame()
-            # st.dataframe(uinsp_df)
-          #  uinsp_df = uinsp_df.reset_index()
-            #st.dataframe(uinsp_df)
+    elif choice == "Analitica":
+        st.subheader("Ingrese Parametros Filtrado DataFrame")
 
-           # p1 = px.pie(uinsp_df, names='index', values='Nombre_Unidad')
-           # st.plotly_chart(p1, use_container_width=True)
-
-    elif choice == "AnaliticaB":
-        st.subheader("Ingrese Rango Fechas DataFrame")
-        col1, col2 = st.columns(2)
-
-        with col1:
-                insp_total = view_inspeccion_total()
+        with st.expander("Tabla Cruzada y Grafica"):
+                insp_total = view_inspeccion_nodet()
                 #st.write(result)
                 df = pd.DataFrame(insp_total,
-                columns=["InspId", "UnidadId", "Unidad","Fecha", "Obs","Prioridad","ConApoyo",
-                "EscId","Escuela","Distrito","TurnoId","Turno","CicloId","Ciclo","DetId",
-                "ApoyoId","NombreApoyo","CatId","Categoria","FuncionId","Funcion"])
-                #df.dtypes
-                st.dataframe(df)
-                
-                lista_esc=[i[0] for i in pl_escuela()]
-                escuelas = st.multiselect("Escuelas", lista_esc)
-
-                insp_in_esc = df[df.EscId.isin([1,3,5])]
-                #planets_in_years.head()
-                st.dataframe(insp_in_esc)
-
-                d = st.date_input("Desde")
-                desde = d.strftime("%Y-%m-%d")
-                st.write('Fecha Inicial:', d)
-                st.write(desde)
-                h = st.date_input("Hasta")
-                hasta = h.strftime("%Y-%m-%d")
-                print("h",h)
-                print("hasta", hasta)
-                print(type(h))
-                print(type(hasta))
-                st.write('Fecha Final:', h)
-                st.write(hasta)
-                print(df['Fecha'].dtype)
-                
-                filtro_df=df.query("Fecha >= '2022-05-20' and Fecha <= '2022-05-21'")
-                #filtro_df = df[df["Fecha"].isin(pd.date_range('d','h'))]
-                #filtro_df =df.loc[df["Fecha"].between('desde', 'hasta')]
-                #print(filtered_df)
-                
-                st.dataframe(filtro_df)
+                columns=["InspId", "UnidadId", "Unidad","Fecha","FInt", "Obs","Prioridad","ConApoyo",
+                "EscId","Escuela","Distrito","TurnoId","Turno","CicloId","Ciclo"])
+                #df.info()
                 #st.dataframe(df)
-
                 
-        with col2:
-            pass
+                df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce').dt.date
+                #df.info()
+                
+                dist = st.multiselect("Elija Distrito",
+                options=df['Distrito'].unique(), 
+                default=df['Distrito'].unique())
+
+                escuela = st.multiselect("Elija Escuela", 
+                options=df['Escuela'].unique(),
+                default=df['Escuela'].unique())
+
+
+                start_date = st.date_input('Fecha Inicio:')
+                print(start_date)
+                end_date = st.date_input('Fecha Fin:')
+                #start_date, end_date = st.date_input('Elija Fecha Inicio, Fecha Final:',[])
+                if end_date >= start_date:
+                    pass
+                else:
+                    st.error('Error: Fecha Inicial debe ser menor o igual que Fecha Final')
+
+                mask = (df['Fecha'] >= start_date) & (df['Fecha'] <= end_date) & (df['Distrito'].isin(dist)) & (df['Escuela'].isin(escuela)) 
+                dffiltro = df.loc[mask]
+                
+                #stc.html(HTML_SEP)
+                st.header('----------------------------------------------------------')
+                st.text("<<Tabla Inspecciones>>")
+                st.dataframe(dffiltro)
+
+                st.header('----------------------------------------------------------')
+                #stc.html(HTML_SEP)
+                st.text("<<CrossTable: Cantidad de Inspecciones por Distrito/Unidad y Turno/Ciclo>>")
+                dfcross= dffiltro.pivot_table('Fecha',['Distrito','Unidad'],['Turno','Ciclo'], aggfunc='count', margins=True,fill_value=0) #,dropna=False,fill_value=0)
+                st.dataframe(dfcross)
+
+                st.header('----------------------------------------------------------')
+                #stc.html(HTML_SEP)
+                st.text("<<Grafico: Cantidad de Inspecciones por Unidad>>")
+                uinsp_df = dffiltro['Unidad'].value_counts().to_frame()
+                #st.dataframe(uinsp_df)
+                uinsp_df = uinsp_df.reset_index()
+                st.dataframe(uinsp_df)
+
+                p1 = px.pie(uinsp_df, names='index', values='Unidad')
+                st.plotly_chart(p1, use_container_width=True)
     
-    elif choice == "Analitica":
-        st.subheader("Tablas Cruzadas y Graficas")
-        #col1, col2 = st.columns([3,1])
-
-        with st.expander("Tabla Cruzada Inspeccion"):
-            st.text("<<Cantidad de Inspecciones por Distrito/Unidad y Turno/Ciclo>>")
-            insp_total = view_inspeccion_total()
-            #st.write(result)
-            df = pd.DataFrame(insp_total,
-            columns=["InspId", "UnidadId", "Unidad","Fecha", "Obs","Prioridad","ConApoyo",
-            "EscId","Escuela","Distrito","TurnoId","Turno","CicloId","Ciclo","DetId",
-            "ApoyoId","NombreApoyo","CatId","Categoria","FuncionId","Funcion"])
-            #st.dataframe(df)
-            
-            dfcross= df.pivot_table('Fecha',['Distrito','Unidad'],['Turno','Ciclo'], aggfunc='count', margins=True)
-            st.dataframe(dfcross)
-        
-
-        with st.expander("Grafica Inspecciones a Unidades"):
-            st.text("<<Cantidad de Inspecciones por Unidad>>")
-            uinsp_df = df['Unidad'].value_counts().to_frame()
-            #st.dataframe(uinsp_df)
-            uinsp_df = uinsp_df.reset_index()
-            st.dataframe(uinsp_df)
-
-            p1 = px.pie(uinsp_df, names='index', values='Unidad')
-            st.plotly_chart(p1, use_container_width=True)
-
+    
                 
     else:
         st.subheader("ACERCA DE *Educacion_Especial_App*")
