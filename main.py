@@ -99,7 +99,6 @@ def main():
             #st.write(result)
             clean_df = pd.DataFrame(result, columns=["InspeccionId","UnidadId","Nombre_Unidad","InspeccionDate","Observacion","Prioridad","Apoyo"])
             #st.dataframe(clean_df)
-
             AgGrid(clean_df)
 
     elif choice == "Escuelas":
@@ -145,8 +144,10 @@ def main():
         with st.expander("Ver Escuelas Educacion Especial"):
             result = view_all_escuelas()
             #st.write(result)
-            clean_df = pd.DataFrame(result) 
-            st.dataframe(clean_df)
+            clean_df = pd.DataFrame(result,
+            columns=["EscuelaId","Nombre","DistritoId","Distrito","AutoridadId","Autoridad","Domicilio","Telefono","Email","LocationGeo","EduEspecial"]) 
+            #st.dataframe(clean_df)
+            AgGrid(clean_df)
 
     elif choice == "Unidades Educacion Especial":
         st.subheader("Crear UEE")
@@ -161,7 +162,7 @@ def main():
             conduccion = int(conduccionraw[0])
 
             periodo = st.text_input("Periodo", max_chars=10, placeholder="Ej. Año 2022")
-            descripcion = st.text_input("Descripcion", max_chars=40, placeholder="Escriba un nombre identificador de la UEE")
+            descripcion = st.text_input("Descripcion", max_chars=40, placeholder="Ej. Esc.20-Mañana-C1-2022")
 
             col1, col2 = st.columns(2)
 
@@ -202,8 +203,10 @@ def main():
         with st.expander("Ver Unidades Educacion Especial"):
             result = view_all_uee()
             #st.write(result)
-            clean_df = pd.DataFrame(result) #, columns=["InspeccionId", "UnidadId", "Fecha", "Observacion"])
-            st.dataframe(clean_df)
+            clean_df = pd.DataFrame(result, 
+            columns=["UnidadId","Periodo","Descripcion","Escuela","ConduccionId","Apellido","Nombre","Conduccion","Turno","Ciclo","LineDet","DocenteId","NombreCompleto"])
+            #st.dataframe(clean_df)
+            AgGrid(clean_df)
 
     elif choice == "Personal Educacion Especial":
         st.subheader("Cargar Personal EE (Docentes, Apoyos y Directivos)")
@@ -256,19 +259,22 @@ def main():
             result = view_all_docesp()
             #st.write(result)
             clean_df = pd.DataFrame(result, columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
-            st.dataframe(clean_df)
+            #st.dataframe(clean_df)
+            AgGrid(clean_df)
 
         with st.expander("Ver Conduccion Educacion Especial"):
             result = view_all_conduccion()
             #st.write(result)
             clean_df = pd.DataFrame(result,columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
-            st.dataframe(clean_df)
+            #st.dataframe(clean_df)
+            AgGrid(clean_df)
 
         with st.expander("Ver Apoyo Educacion Especial"):
             result = view_all_apoyo()
             #st.write(result)
             clean_df = pd.DataFrame(result,columns=["Id","Apellido","Nombre","NombreCompleto","Telefono","Email","Cat","Funcion","DocEsp","Cond","Apoyo"]) 
-            st.dataframe(clean_df)
+            #st.dataframe(clean_df)
+            AgGrid(clean_df)
 
     elif choice == "Exportacion Inspecciones a CSV":
         st.subheader("Exportar Vista_Inspecciones_Total a CSV")
@@ -336,6 +342,7 @@ def main():
                 st.text("<<CrossTable: Cantidad de Inspecciones por Distrito/Unidad y Turno/Ciclo>>")
                 dfcross= dffiltro.pivot_table('Fecha',['Distrito','Unidad'],['Turno','Ciclo'], aggfunc='count', margins=True,fill_value=0) #,dropna=False,fill_value=0)
                 st.dataframe(dfcross)
+                #AgGrid(dfcross)
 
                 st.header('----------------------------------------------------------')
                 #stc.html(HTML_SEP)
