@@ -6,6 +6,8 @@ from PIL import Image
 from datetime import datetime as dt
 import pandas as pd
 from st_aggrid import AgGrid
+from st_aggrid.grid_options_builder import GridOptionsBuilder
+
 from db_fxns import * 
 import streamlit.components.v1 as stc
 
@@ -285,7 +287,17 @@ def main():
             columns=["InspId", "UnidadId", "Unidad","FHora", "Fecha", "Obs","Prioridad","ConApoyo",
             "EscId","Escuela","Distrito","TurnoId","Turno","CicloId","Ciclo","DetId",
             "ApoyoId","NombreApoyo","CatId","Categoria","FuncionId","Funcion"])
-            st.dataframe(clean_df_insp_tot)
+            #st.dataframe(clean_df_insp_tot)
+            #AgGrid(clean_df_insp_tot)
+            
+            # Data 
+            gb = GridOptionsBuilder.from_dataframe(clean_df_insp_tot)
+            gb.configure_pagination()
+            gridOptions = gb.build()
+
+            AgGrid(clean_df_insp_tot, gridOptions=gridOptions)
+            
+            
 
             csv = convert_df(clean_df_insp_tot)
             st.download_button(
@@ -335,7 +347,16 @@ def main():
                 #stc.html(HTML_SEP)
                 st.header('----------------------------------------------------------')
                 st.text("<<Tabla Inspecciones>>")
-                st.dataframe(dffiltro)
+                #st.dataframe(dffiltro)
+
+                gb = GridOptionsBuilder.from_dataframe(dffiltro)
+
+                gb.configure_pagination()
+                gb.configure_side_bar()
+                gb.configure_default_column(groupable=True, value=True, enableRowGroup=True, aggFunc="count", editable=True)
+                gridOptions = gb.build()
+
+                AgGrid(dffiltro, gridOptions=gridOptions, enable_enterprise_modules=True)
 
                 st.header('----------------------------------------------------------')
                 #stc.html(HTML_SEP)
