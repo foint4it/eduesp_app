@@ -7,6 +7,8 @@ from datetime import datetime as dt
 import pandas as pd
 from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
+from st_aggrid.shared import GridUpdateMode
+
 
 from db_fxns import * 
 import streamlit.components.v1 as stc
@@ -99,9 +101,37 @@ def main():
         with st.expander("Vista Inspecciones Cabecera"):
             result = view_all_insp_cab()
             #st.write(result)
-            clean_df = pd.DataFrame(result, columns=["InspeccionId","UnidadId","Nombre_Unidad","InspeccionDate","Observacion","Prioridad","Apoyo"])
+            clean_df = pd.DataFrame(result, columns=["InspeccionId","UnidadId","NombreUnidad","InspeccionDate","Observacion","Prioridad","Apoyo"])
             #st.dataframe(clean_df)
-            AgGrid(clean_df)
+            #AgGrid(clean_df)
+
+            gb = GridOptionsBuilder.from_dataframe(clean_df)
+            gb.configure_selection(selection_mode="multiple", use_checkbox=True)
+            gb.configure_pagination()
+            gb.configure_side_bar()
+            gb.configure_default_column(groupable=True, value=True, enableRowGroup=True, aggFunc="count", editable=True)
+            gridOptions = gb.build()
+
+            data = AgGrid(clean_df, 
+                gridOptions=gridOptions, 
+                enable_enterprise_modules=True, 
+                allow_unsafe_jscode=True, 
+                update_mode=GridUpdateMode.SELECTION_CHANGED)
+
+
+            #grid_response= AgGrid(clean_df, gridOptions=gridOptions, enable_enterprise_modules=True)
+
+            st.write(data)
+
+            #df = grid_response['data']
+
+            selected_rows = data["selected_rows"]
+            selected_rows = pd.DataFrame(selected_rows)
+
+            if len(selected_rows) != 0:
+                fig = px.bar(selected_rows, "NombreUnidad", color="Apoyo")
+                st.plotly_chart(fig)
+
 
     elif choice == "Escuelas":
         st.subheader("Cargar Escuelas Educacion Especial")
