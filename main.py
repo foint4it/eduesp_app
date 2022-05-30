@@ -5,6 +5,7 @@ st.set_page_config(page_title='Educacion Especial', page_icon='📔')
 from PIL import Image
 from datetime import datetime as dt
 import pandas as pd
+
 from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 from st_aggrid.shared import GridUpdateMode
@@ -21,8 +22,29 @@ import matplotlib
 matplotlib.use('Agg')
 
 
+st.markdown('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">', unsafe_allow_html=True)
+
+st.markdown("""
+<nav class="navbar navbar-expand-lg bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Proyecto EE</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-link active" aria-current="page" href="#">Home</a>
+        <a class="nav-link" href="#">Recursos</a>
+        <a class="nav-link" href="#">Informacion</a>
+      </div>
+    </div>
+  </div>
+</nav>""", unsafe_allow_html=True)
+
+
+
 HTML_BANNER = """
-    <div style="background-color:#464e5f;padding:10px;border-radius:10px">
+    <div style="background-color:#262730;padding:10px;border-radius:10px">
     <h1 style="color:white;text-align:center;">EDUCACION ESPECIAL</h1>
     <p style="color:white;text-align:center;">[Escuelas Primarias CABA]</p>
     </div>
@@ -32,6 +54,14 @@ HTML_SEPARADOR = """
     </div>
     """
 HTML_SEP = """<hr width=100%  align="center"  size=10 color="blue">"""
+
+hide_style = """
+            <style>
+            footer{visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_style, unsafe_allow_html=True)
+
 
 @st.cache
 def convert_df(df):
@@ -121,7 +151,8 @@ def main():
 
             #grid_response= AgGrid(clean_df, gridOptions=gridOptions, enable_enterprise_modules=True)
 
-            st.write(data)
+            st.text("<JSON Inspecciones Seleccionadas p/Grafica>")
+            st.write(data, expanded=False)
 
             #df = grid_response['data']
 
@@ -129,10 +160,10 @@ def main():
             selected_rows = pd.DataFrame(selected_rows)
 
             if len(selected_rows) != 0:
-                fig = px.bar(selected_rows, "NombreUnidad", color="Apoyo")
+                fig = px.bar(selected_rows, "NombreUnidad", color="Prioridad", title="Cantidad de Inspecciones por Unidad y Prioridad")
                 st.plotly_chart(fig)
 
-
+            
     elif choice == "Escuelas":
         st.subheader("Cargar Escuelas Educacion Especial")
         with st.form("c_eee", clear_on_submit=True):
@@ -337,6 +368,7 @@ def main():
                 mime='text/csv',
             )
 
+            st.json(clean_df_insp_tot, expanded=False)
         
     elif choice == "Analitica":
         st.subheader("Ingrese Parametros Filtrado DataFrame")
@@ -406,8 +438,7 @@ def main():
                 p1 = px.pie(uinsp_df, names='index', values='Unidad')
                 st.plotly_chart(p1, use_container_width=True)
     
-    
-                
+
     else:
         st.subheader("ACERCA DE *Educacion_Especial_App*")
         st.info("Built with Streamlit - Año 2022")
