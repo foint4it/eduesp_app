@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title='Educacion Especial', page_icon='📔')
+st.set_page_config(page_title='DEMOS DS', page_icon='📔')
 
 from PIL import Image
 from datetime import datetime as dt
@@ -25,17 +25,17 @@ matplotlib.use('Agg')
 st.markdown('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">', unsafe_allow_html=True)
 
 st.markdown("""
-<nav class="navbar navbar-expand-lg bg-dark">
+<nav class="navbar navbar-expand-lg bg-light">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Proyecto EE</a>
+    <a class="navbar-brand" href="https://drive.google.com/file/d/1kMiRUHfHJaPNMwROLQrqo6F9zuHikcMf/view?usp=sharing">
+    WF</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-        <a class="nav-link active" aria-current="page" href="#">Home</a>
-        <a class="nav-link" href="#">Recursos</a>
-        <a class="nav-link" href="#">Informacion</a>
+        <a class="nav-link" href="https://tableau-wf.herokuapp.com/vis#">Dashboards-Tableau</a>
+        <a class="nav-link" href="https://eda-crypto.herokuapp.com/">Cotizaciones-Cripto</a>
       </div>
     </div>
   </div>
@@ -45,8 +45,8 @@ st.markdown("""
 
 HTML_BANNER = """
     <div style="background-color:#262730;padding:10px;border-radius:10px">
-    <h1 style="color:white;text-align:center;">EDUCACION ESPECIAL</h1>
-    <p style="color:white;text-align:center;">[Escuelas Primarias CABA]</p>
+    <h1 style="color:white;text-align:center;">PROYECTO EDUCACION ESPECIAL</h1>
+    <p style="color:white;text-align:center;">[Escuelas Primarias RN]</p>
     </div>
     """
 HTML_SEPARADOR = """
@@ -128,7 +128,8 @@ def main():
         #stc.html(HTML_SEPARADOR)
 
         st.subheader("Consultar INSPECCION")
-        with st.expander("Vista Inspecciones Cabecera"):
+        with st.expander("Listado Interactivo de Inspecciones a UEE"):
+            st.text("Seleccione Inspecciones para Grafica ===>")
             result = view_all_insp_cab()
             #st.write(result)
             clean_df = pd.DataFrame(result, columns=["InspeccionId","UnidadId","NombreUnidad","InspeccionDate","Observacion","Prioridad","Apoyo"])
@@ -261,7 +262,7 @@ def main():
                 st.success("Se agregò UEE Nro {}".format(unidad))
 
 
-        st.write("Outside the form")
+        #st.write("Outside the form")
         st.subheader("Consultar UEE")
         with st.expander("Ver Unidades Educacion Especial"):
             result = view_all_uee()
@@ -368,7 +369,6 @@ def main():
                 mime='text/csv',
             )
 
-            st.json(clean_df_insp_tot, expanded=False)
         
     elif choice == "Analitica":
         st.subheader("Ingrese Parametros Filtrado DataFrame")
