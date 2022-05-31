@@ -3,7 +3,7 @@ import streamlit as st
 st.set_page_config(page_title='DEMOS DS', page_icon='📔')
 
 from PIL import Image
-from datetime import datetime as dt
+import datetime
 import pandas as pd
 
 from st_aggrid import AgGrid
@@ -371,9 +371,9 @@ def main():
 
         
     elif choice == "Analitica":
-        st.subheader("Ingrese Parametros Filtrado DataFrame")
+        st.subheader("Ingrese Parametros p/filtrar Inspecciones")
 
-        with st.expander("Tabla Cruzada y Grafica"):
+        with st.expander("Grilla Interactiva, Tabla Cruzada y Grafico"):
                 insp_total = view_inspeccion_nodet()
                 #st.write(result)
                 df = pd.DataFrame(insp_total,
@@ -394,7 +394,12 @@ def main():
                 default=df['Escuela'].unique())
 
 
-                start_date = st.date_input('Fecha Inicio:')
+                # inicializo fecha rango 
+                today = datetime.date.today()
+                fecini = today - datetime.timedelta(days=30)
+                #print(fecini) 
+
+                start_date = st.date_input('Fecha Inicio:',fecini)
                 print(start_date)
                 end_date = st.date_input('Fecha Fin:')
                 #start_date, end_date = st.date_input('Elija Fecha Inicio, Fecha Final:',[])
