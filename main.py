@@ -27,7 +27,7 @@ st.markdown('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist
 st.markdown("""
 <nav class="navbar navbar-expand-lg bg-light">
   <div class="container-fluid">
-    <a class="navbar-brand" href="https://drive.google.com/file/d/1kMiRUHfHJaPNMwROLQrqo6F9zuHikcMf/view?usp=sharing">
+    <a class="navbar-brand" href="https://drive.google.com/file/d/1rxqy96U_BWWhyiOk2QRx-kpFptmlbyuh/view?usp=sharing">
     WF</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -96,11 +96,11 @@ def main():
             fecha = str(dia) + " " + str(hora) 
             
         with col3:
-            obs = st.text_area("Observacion")
+            obs = st.text_area("Observacion", placeholder="Describa Inspeccion... (opcional)")
             lista_prioridades = [i[0] for i in pl_prioridad()]
             prioridadraw = st.selectbox("Prioridad", lista_prioridades).split('-')
             prioridad = int(prioridadraw[0])
-            apoyo = st.checkbox('Apoyo Profesional')
+            apoyo = st.checkbox('Apoyo Profesional',help="Tilde para habilitar Profesionales de Apoyo")
             if apoyo:
                 apoyo = 1
                 lista_apoyo=[i[0] for i in pl_apoyo()]
@@ -124,6 +124,7 @@ def main():
                     add_insp_det(insp,0)
                 #st.info("El dato devuelto es: {}".format(type(inspraw)))
                 st.success("Se agregò Inspeccion Nro {}".format(insp))
+                obs=""
 
         #stc.html(HTML_SEPARADOR)
 
