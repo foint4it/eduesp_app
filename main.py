@@ -27,7 +27,7 @@ st.markdown('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist
 st.markdown("""
 <nav class="navbar navbar-expand-lg bg-light">
   <div class="container-fluid">
-    <a class="navbar-brand" href="https://drive.google.com/file/d/1rxqy96U_BWWhyiOk2QRx-kpFptmlbyuh/view?usp=sharing">
+    <a class="navbar-brand" href="https://drive.google.com/file/d/1IddOzhq47WiqLhNsWM6yUcdbsdJpA0K4/view?usp=sharing">
     WF</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
