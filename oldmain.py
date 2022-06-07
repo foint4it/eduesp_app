@@ -1,12 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title='DEMOS2 DS', page_icon='📔')
-
-import json
-import requests
-
-from streamlit_option_menu import option_menu
-from streamlit_lottie import st_lottie
+st.set_page_config(page_title='DEMOS DS', page_icon='📔')
 
 from PIL import Image
 import datetime
@@ -50,9 +44,9 @@ st.markdown("""
 
 
 HTML_BANNER = """
-    <div style="background-color:white;padding:10px;border-radius:10px">
-    <h1 style="color:black;text-align:center;">PROYECTO EDUCACION ESPECIAL</h1>
-    <p style="color:black;text-align:center;">[Escuelas Primarias RN]</p>
+    <div style="background-color:#262730;padding:10px;border-radius:10px">
+    <h1 style="color:white;text-align:center;">PROYECTO EDUCACION ESPECIAL</h1>
+    <p style="color:white;text-align:center;">[Escuelas Primarias RN]</p>
     </div>
     """
 HTML_SEPARADOR = """
@@ -73,46 +67,13 @@ st.markdown(hide_style, unsafe_allow_html=True)
 def convert_df(df):
     return df.to_csv().encode('utf-8')
 
-def load_lottiefile(filepath: str):
-    with open(filepath, "r") as f:
-        return json.load(f)
-
 
 def main():
-
-    col1, col2 = st.columns([3.5, 1])
     
-    with col1:
-        stc.html(HTML_BANNER)
-    with col2: 
-        lottie_alumno = load_lottiefile("alumno.json")
-        st_lottie(lottie_alumno,
-        speed=1,
-        reverse=False,
-        loop=True,
-        quality="low", # medium ; high
-        #renderer="svg", # canvas
-        height=160,
-        width=130,
-        key="lottie1",
-        )
-
-    with st.sidebar:
-        choice = option_menu(
-            menu_title="Menu EE",
-            options=["Inspecciones", "Unidades EE", "Escuelas", "Personal EE", "Analitica","Inspecciones a CSV", "About"],
-            icons=['calendar3', 'bricks', 'house', 'person-video3', 'kanban', 'cloud-download', 'book-half'],
-            menu_icon="menu-app", default_index=0, 
-            #orientation="horizontal",
-            styles={
-            "container": {"padding": "5!important", "background-color": "#fafafa"},
-            "icon": {"color": "blue", "font-size": "25px"}, 
-            "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
-            "nav-link-selected": {"background-color": "#02ab21"},
-            }   
-        )
-    #menu = ["Inspecciones", "Unidades Educacion Especial", "Escuelas", "Personal Educacion Especial", "Analitica","Exportacion Inspecciones a CSV", "About"]
-    #choice = st.sidebar.selectbox("MENU EDUCACION ESPECIAL", menu)
+    stc.html(HTML_BANNER)
+    
+    menu = ["Inspecciones", "Unidades Educacion Especial", "Escuelas", "Personal Educacion Especial", "Analitica","Exportacion Inspecciones a CSV", "About"]
+    choice = st.sidebar.selectbox("MENU EDUCACION ESPECIAL", menu)
     #create_table()
 
     if choice == "Inspecciones":
@@ -253,7 +214,7 @@ def main():
             #st.dataframe(clean_df)
             AgGrid(clean_df)
 
-    elif choice == "Unidades EE":
+    elif choice == "Unidades Educacion Especial":
         st.subheader("Crear UEE")
         with st.form("c_uee", clear_on_submit=True):
             st.write("Ingrese Datos >>>")
@@ -312,7 +273,7 @@ def main():
             #st.dataframe(clean_df)
             AgGrid(clean_df)
 
-    elif choice == "Personal EE":
+    elif choice == "Personal Educacion Especial":
         st.subheader("Cargar Personal EE (Docentes, Apoyos y Directivos)")
         with st.form("c_pee", clear_on_submit=True):
             st.write("Ingrese Datos >>>")
@@ -380,7 +341,7 @@ def main():
             #st.dataframe(clean_df)
             AgGrid(clean_df)
 
-    elif choice == "Inspecciones a CSV":
+    elif choice == "Exportacion Inspecciones a CSV":
         st.subheader("Exportar Vista_Inspecciones_Total a CSV")
         with st.expander("Vista Inspecciones Total"):
             inspeccion_total = view_inspeccion_tot()

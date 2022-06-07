@@ -5,3 +5,6 @@ Pillow==9.1.0
 plotly==5.8.0
 streamlit==1.9.0
 streamlit-aggrid==0.2.3.post2
+protobuf~=3.19.0
+streamlit-option-menu==0.3.2
+streamlit-lottie==0.0.3
