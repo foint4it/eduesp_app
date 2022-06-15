@@ -8,3 +8,4 @@ streamlit-aggrid==0.2.3.post2
 protobuf~=3.19.0
 streamlit-option-menu==0.3.2
 streamlit-lottie==0.0.3
+wordcloud==1.8.1
