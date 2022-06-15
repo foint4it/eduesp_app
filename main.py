@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title='DEMOS2 DS', page_icon='📔')
+st.set_page_config(page_title='DEMOS DS', page_icon='📔',layout='wide')
 
 import json
 import requests
@@ -9,8 +9,10 @@ from streamlit_option_menu import option_menu
 from streamlit_lottie import st_lottie
 
 from PIL import Image
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import datetime
 import pandas as pd
+import numpy as np
 
 from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
@@ -33,7 +35,7 @@ st.markdown('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist
 st.markdown("""
 <nav class="navbar navbar-expand-lg bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="https://drive.google.com/file/d/1IddOzhq47WiqLhNsWM6yUcdbsdJpA0K4/view?usp=sharing">
+    <a class="navbar-brand" href="https://drive.google.com/file/d/16q4krj2_qnNGxs2ppMiuuS9eW_j2HStz/view?usp=sharing">
     WF</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -41,6 +43,7 @@ st.markdown("""
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
         <a class="nav-link" href="https://tableau-wf.herokuapp.com/vis#">Dashboards-Tableau</a>
+        <a class="nav-link" href="https://share.streamlit.io/foint4it/multi-page-st/Hello.py">MultiPage-St</a>
         <a class="nav-link" href="https://eda-crypto.herokuapp.com/">Cotizaciones-Cripto</a>
       </div>
     </div>
@@ -72,6 +75,12 @@ st.markdown(hide_style, unsafe_allow_html=True)
 @st.cache
 def convert_df(df):
     return df.to_csv().encode('utf-8')
+
+def transform_format(val):
+    if val == 0:
+        return 255
+    else:
+        return val
 
 def load_lottiefile(filepath: str):
     with open(filepath, "r") as f:
@@ -120,11 +129,11 @@ def main():
         col1, col2, col3 = st.columns(3)
 
         with col1:
-                st.text("INGRESE INFORMACION >>>")
-                image = Image.open('logo.jpg')
-                st.image("logo.jpg", use_column_width="always")
-                with st.expander("Fuente Img"):
-                    stc.html('''<a href='https://www.freepik.es/vectores/lapiz-animado'>Vector de lapiz animado creado por catalyststuff - www.freepik.es</a>''')
+            st.text("INGRESE INFORMACION >>>")
+            image = Image.open('logo.jpg')
+            st.image("logo.jpg", use_column_width="always")
+            with st.expander("Fuente Img"):
+                stc.html('''<a href='https://www.freepik.es/vectores/lapiz-animado'>Vector de lapiz animado creado por catalyststuff - www.freepik.es</a>''')
 
         with col2:
             lista_unidades = [i[0] for i in pl_unidad()]
@@ -169,7 +178,7 @@ def main():
 
         st.subheader("Consultar INSPECCION")
         with st.expander("Listado Interactivo de Inspecciones a UEE"):
-            st.text("Seleccione Inspecciones para Grafica ===>")
+            st.info("Seleccione Inspecciones para generar grafico...")
             result = view_all_insp_cab()
             #st.write(result)
             clean_df = pd.DataFrame(result, columns=["InspeccionId","UnidadId","NombreUnidad","InspeccionDate","Observacion","Prioridad","Apoyo"])
@@ -192,7 +201,7 @@ def main():
 
             #grid_response= AgGrid(clean_df, gridOptions=gridOptions, enable_enterprise_modules=True)
 
-            st.text("<JSON Inspecciones Seleccionadas p/Grafica>")
+            st.caption("<JSON Datos Seleccionados>")
             st.write(data, expanded=False)
 
             #df = grid_response['data']
@@ -381,8 +390,9 @@ def main():
             AgGrid(clean_df)
 
     elif choice == "Inspecciones a CSV":
-        st.subheader("Exportar Vista_Inspecciones_Total a CSV")
-        with st.expander("Vista Inspecciones Total"):
+        st.subheader("Exporte Vista_Inspecciones_Total a formato csv")
+        with st.expander("Vista Inspecciones Total", expanded=True):
+            
             inspeccion_total = view_inspeccion_tot()
             #st.write(result)
             clean_df_insp_tot = pd.DataFrame(inspeccion_total,
@@ -411,9 +421,9 @@ def main():
 
         
     elif choice == "Analitica":
-        st.subheader("Ingrese Parametros p/filtrar Inspecciones")
+        st.subheader("Ingrese parametros p/filtrar Inspecciones")
 
-        with st.expander("Grilla Interactiva, Tabla Cruzada y Grafico"):
+        with st.expander("📊 Grilla Interactiva, Tabla Cruzada y Grafico", expanded=True):
                 insp_total = view_inspeccion_nodet()
                 #st.write(result)
                 df = pd.DataFrame(insp_total,
@@ -425,14 +435,12 @@ def main():
                 df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce').dt.date
                 #df.info()
                 
-                dist = st.multiselect("Elija Distrito",
-                options=df['Distrito'].unique(), 
-                default=df['Distrito'].unique())
+                opt_dist = sorted(df["Distrito"].unique())
+                opt_esc = sorted(df["Escuela"].unique())
 
-                escuela = st.multiselect("Elija Escuela", 
-                options=df['Escuela'].unique(),
-                default=df['Escuela'].unique())
-
+                dist = st.multiselect("Elija Distrito", opt_dist, opt_dist)
+                
+                escuela = st.multiselect("Elija Escuela", opt_esc, opt_esc)
 
                 # inicializo fecha rango 
                 today = datetime.date.today()
@@ -451,9 +459,7 @@ def main():
                 mask = (df['Fecha'] >= start_date) & (df['Fecha'] <= end_date) & (df['Distrito'].isin(dist)) & (df['Escuela'].isin(escuela)) 
                 dffiltro = df.loc[mask]
                 
-                #stc.html(HTML_SEP)
-                st.header('----------------------------------------------------------')
-                st.text("<<Tabla Inspecciones>>")
+                st.info("Tabla Interactiva: Filtrar, Agrupar y Ordenar Inspecciones")
                 #st.dataframe(dffiltro)
 
                 gb = GridOptionsBuilder.from_dataframe(dffiltro)
@@ -465,16 +471,12 @@ def main():
 
                 AgGrid(dffiltro, gridOptions=gridOptions, enable_enterprise_modules=True)
 
-                st.header('----------------------------------------------------------')
-                #stc.html(HTML_SEP)
-                st.text("<<CrossTable: Cantidad de Inspecciones por Distrito/Unidad y Turno/Ciclo>>")
+                st.info("CrossTable: Cantidad de Inspecciones por Distrito/Unidad y Turno/Ciclo")
                 dfcross= dffiltro.pivot_table('Fecha',['Distrito','Unidad'],['Turno','Ciclo'], aggfunc='count', margins=True,fill_value=0) #,dropna=False,fill_value=0)
                 st.dataframe(dfcross)
                 #AgGrid(dfcross)
 
-                st.header('----------------------------------------------------------')
-                #stc.html(HTML_SEP)
-                st.text("<<Grafico: Cantidad de Inspecciones por Unidad>>")
+                st.info("Grafico: Cantidad de Inspecciones por Unidad")
                 uinsp_df = dffiltro['Unidad'].value_counts().to_frame()
                 #st.dataframe(uinsp_df)
                 uinsp_df = uinsp_df.reset_index()
@@ -482,11 +484,52 @@ def main():
 
                 p1 = px.pie(uinsp_df, names='index', values='Unidad')
                 st.plotly_chart(p1, use_container_width=True)
-    
+
+                st.info("Word Cloud: Observaciones en las Inspecciones")
+
+                col1, col2, col3 = st.columns([1,3,1])
+
+                with col1:
+                    text = " ".join(review for review in dffiltro.Obs)
+                    #st.text("Hay {} palabras en las Observaciones \nseleccionadas.".format(len(text)))
+                    palabras=len(text)
+                    st.metric ("Palabras Observaciones", value=palabras)
+                    
+                with col2:
+                    # Create stopword list:
+                    stopwords = set(STOPWORDS)
+                    stopwords.update(["id", "et", "ut", "in", "lorem", "ipsum"])
+
+                    escuela_mask = np.array(Image.open("familia.png"))
+                    print("escuela mask:", escuela_mask)
+
+                    # Transform your mask into a new one that will work with the function:
+                    #transformed_escuela_mask = np.ndarray((escuela_mask.shape[0],escuela_mask.shape[1]), np.int32)
+
+                    #for i in range(len(escuela_mask)):
+                    #    transformed_escuela_mask[i] = list(map(transform_format, escuela_mask[i]))
+
+                    # Check the expected result of your mask
+                    #print("transformada:", transformed_escuela_mask)
+
+                    wordcloud_escuela = WordCloud(background_color="white", max_words=1000, mask=escuela_mask,
+                            stopwords=stopwords, contour_width=1, contour_color='seashell').generate(text)
+                    fig10 = plt.figure(figsize=[80,40])
+                    plt.imshow(wordcloud_escuela)
+                    plt.axis("off")
+                    st.pyplot(fig10)
+
+                    wordcloud_escuela.to_file("familia_wc.png")
+
+                with col3:
+                    image = Image.open('familia.png')
+
+                    st.image(image) #, caption='Familia y Escuelas')
+                    
 
     else:
         st.subheader("ACERCA DE *Educacion_Especial_App*")
-        st.info("Built with Streamlit - Año 2022")
+        st.info("Built with Streamlit - 2022 - @foint4it")
         
 if __name__ == '__main__':
     main()
