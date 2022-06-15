@@ -485,23 +485,23 @@ def main():
                 p1 = px.pie(uinsp_df, names='index', values='Unidad')
                 st.plotly_chart(p1, use_container_width=True)
 
-                st.info("Word Cloud: Observaciones en las Inspecciones")
+                #st.info("Word Cloud: Observaciones en las Inspecciones")
 
-                col1, col2, col3 = st.columns([1,3,1])
+                #col1, col2, col3 = st.columns([1,3,1])
 
-                with col1:
-                    text = " ".join(review for review in dffiltro.Obs)
+                #with col1:
+                 #   text = " ".join(review for review in dffiltro.Obs)
                     #st.text("Hay {} palabras en las Observaciones \nseleccionadas.".format(len(text)))
-                    palabras=len(text)
-                    st.metric ("Palabras Observaciones", value=palabras)
+                  #  palabras=len(text)
+                  #  st.metric ("Palabras Observaciones", value=palabras)
                     
-                with col2:
+                #with col2:
                     # Create stopword list:
-                    stopwords = set(STOPWORDS)
-                    stopwords.update(["id", "et", "ut", "in", "lorem", "ipsum"])
+                 #   stopwords = set(STOPWORDS)
+                 #   stopwords.update(["id", "et", "ut", "in", "lorem", "ipsum"])
 
-                    escuela_mask = np.array(Image.open("familia.png"))
-                    print("escuela mask:", escuela_mask)
+                  #  escuela_mask = np.array(Image.open("familia.png"))
+                  #  print("escuela mask:", escuela_mask)
 
                     # Transform your mask into a new one that will work with the function:
                     #transformed_escuela_mask = np.ndarray((escuela_mask.shape[0],escuela_mask.shape[1]), np.int32)
@@ -512,19 +512,19 @@ def main():
                     # Check the expected result of your mask
                     #print("transformada:", transformed_escuela_mask)
 
-                    wordcloud_escuela = WordCloud(background_color="white", max_words=1000, mask=escuela_mask,
-                            stopwords=stopwords, contour_width=1, contour_color='seashell').generate(text)
-                    fig10 = plt.figure(figsize=[80,40])
-                    plt.imshow(wordcloud_escuela)
-                    plt.axis("off")
-                    st.pyplot(fig10)
+                   # wordcloud_escuela = WordCloud(background_color="white", max_words=1000, mask=escuela_mask,
+                    #        stopwords=stopwords, contour_width=1, contour_color='seashell').generate(text)
+                   # fig10 = plt.figure(figsize=[80,40])
+                    #plt.imshow(wordcloud_escuela)
+                    #plt.axis("off")
+                    #st.pyplot(fig10)
 
-                    wordcloud_escuela.to_file("familia_wc.png")
+                    #wordcloud_escuela.to_file("familia_wc.png")
 
-                with col3:
-                    image = Image.open('familia.png')
+                #with col3:
+                 #   image = Image.open('familia.png')
 
-                    st.image(image) #, caption='Familia y Escuelas')
+                  #  st.image(image) #, caption='Familia y Escuelas')
                     
 
     else:
