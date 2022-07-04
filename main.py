@@ -44,6 +44,7 @@ st.markdown("""
       <div class="navbar-nav">
         <a class="nav-link" href="https://tableau-wf.herokuapp.com/vis#">Dashboards-Tableau</a>
         <a class="nav-link" href="https://share.streamlit.io/foint4it/multi-page-st/Hello.py">MultiPage-St</a>
+        <a class="nav-link" href="https://share.streamlit.io/foint4it/nlp_app/app.py">NLP-App</a>
         <a class="nav-link" href="https://eda-crypto.herokuapp.com/">Cotizaciones-Cripto</a>
       </div>
     </div>
@@ -444,7 +445,7 @@ def main():
 
                 # inicializo fecha rango 
                 today = datetime.date.today()
-                fecini = today - datetime.timedelta(days=30)
+                fecini = today - datetime.timedelta(days=90)
                 #print(fecini) 
 
                 start_date = st.date_input('Fecha Inicio:',fecini)
