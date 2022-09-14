@@ -445,7 +445,7 @@ def main():
 
                 # inicializo fecha rango 
                 today = datetime.date.today()
-                fecini = today - datetime.timedelta(days=90)
+                fecini = today - datetime.timedelta(days=240)
                 #print(fecini) 
 
                 start_date = st.date_input('Fecha Inicio:',fecini)
