@@ -56,7 +56,7 @@ st.markdown("""
 HTML_BANNER = """
     <div style="background-color:white;padding:10px;border-radius:10px">
     <h1 style="color:black;text-align:center;">PROYECTO EDUCACION ESPECIAL</h1>
-    <p style="color:black;text-align:center;">[Escuelas Primarias RN]</p>
+    <p style="color:black;text-align:center;">[Apoyo a Niños de Escuelas Primarias]</p>
     </div>
     """
 HTML_SEPARADOR = """
@@ -95,7 +95,7 @@ def main():
     with col1:
         stc.html(HTML_BANNER)
     with col2: 
-        lottie_alumno = load_lottiefile("alumno.json")
+        lottie_alumno = load_lottiefile("61281-class-board.json")
         st_lottie(lottie_alumno,
         speed=1,
         reverse=False,
@@ -131,10 +131,11 @@ def main():
 
         with col1:
             st.text("INGRESE INFORMACION >>>")
-            image = Image.open('logo.jpg')
-            st.image("logo.jpg", use_column_width="always")
+            image = Image.open('kids_circle_10.jpg')
+            st.image("kids_circle_10.jpg", use_column_width="always")
             with st.expander("Fuente Img"):
-                stc.html('''<a href='https://www.freepik.es/vectores/lapiz-animado'>Vector de lapiz animado creado por catalyststuff - www.freepik.es</a>''')
+                #stc.html('''<a href='https://www.freepik.es/vectores/lapiz-animado'>Vector de lapiz animado creado por catalyststuff - www.freepik.es</a>''')
+                stc.html('''<a href="https://www.freepik.es/vector-gratis/union-amigos-felices-escuela-bailan-circulo-blanco-ninos-dibujos-animados-juegan-anillo-ninos-ninas-tomados-mano-vista-perspectiva-arriba-abajo_28945880.htm#query=escuela&position=28&from_view=search">Imagen de studio4rt</a> en Freepik''')
 
         with col2:
             lista_unidades = [i[0] for i in pl_unidad()]
@@ -149,7 +150,7 @@ def main():
             lista_prioridades = [i[0] for i in pl_prioridad()]
             prioridadraw = st.selectbox("Prioridad", lista_prioridades).split('-')
             prioridad = int(prioridadraw[0])
-            apoyo = st.checkbox('Apoyo Profesional',help="Tilde para habilitar Profesionales de Apoyo")
+            apoyo = st.checkbox('Personal Apoyo Profesional',help="Tilde para habilitar Profesionales de Apoyo")
             if apoyo:
                 apoyo = 1
                 lista_apoyo=[i[0] for i in pl_apoyo()]
